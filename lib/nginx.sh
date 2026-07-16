@@ -11,8 +11,18 @@ configure_nginx() {
         apt-get install -y nginx
     fi
 
-    envsubst '${SERVER_NAME} ${FRONTEND_PORT} ${AUTH_PORT} ${APPLICATION_PORT}' \
-        < "$ROOT_DIR/templates/nginx.conf" \
+    if [[ "${SSL_ENABLED}" == "true" ]]; then
+        info "Generating HTTPS Nginx configuration..."
+        TEMPLATE="$ROOT_DIR/templates/nginx-ssl.conf"
+        ENV_VARS='${SERVER_NAME} ${FRONTEND_PORT} ${AUTH_PORT} ${APPLICATION_PORT}'
+    else
+        info "Generating HTTP Nginx configuration..."
+        TEMPLATE="$ROOT_DIR/templates/nginx.conf"
+        ENV_VARS='${SERVER_NAME} ${FRONTEND_PORT} ${AUTH_PORT} ${APPLICATION_PORT}'
+    fi
+
+    envsubst "$ENV_VARS" \
+        < "$TEMPLATE" \
         > "/etc/nginx/sites-available/$APP_NAME"
 
     ln -sf \
@@ -27,7 +37,10 @@ configure_nginx() {
     }
 
     systemctl enable nginx
-    systemctl restart nginx
+    systemctl restart nginx || {
+        error "Failed to restart Nginx."
+        exit 1
+    }
 
     success "Nginx configured."
 }
