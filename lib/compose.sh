@@ -10,18 +10,26 @@ compose_up() {
     }
 
     # --------------------------------------------------
-    # Prepare environment files
+    # Load FastDeploy environment
     # --------------------------------------------------
-    info "Preparing environment files..."
+    info "Loading deployment configuration..."
+
+    set -a
+    source "$SCRIPT_DIR/.env"
+    set +a
+
+    # --------------------------------------------------
+    # Generate application environment files
+    # --------------------------------------------------
+    info "Generating environment files..."
 
     while IFS= read -r example; do
 
         target="${example%.example}"
 
-        if [[ ! -f "$target" ]]; then
-            cp "$example" "$target"
-            info "Created $(realpath --relative-to="$APP_PATH" "$target")"
-        fi
+        envsubst < "$example" > "$target"
+
+        info "Generated $(realpath --relative-to="$APP_PATH" "$target")"
 
     done < <(find . -type f -name ".env.docker.example")
 
