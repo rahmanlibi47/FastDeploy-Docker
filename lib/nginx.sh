@@ -11,11 +11,9 @@ configure_nginx() {
         apt-get install -y nginx
     fi
 
-    cp "$ROOT_DIR/templates/nginx.conf" \
-        "/etc/nginx/sites-available/$APP_NAME"
-
-    sed -i "s|{{DOMAIN}}|$DOMAIN|g" \
-        "/etc/nginx/sites-available/$APP_NAME"
+    envsubst '${SERVER_NAME} ${FRONTEND_PORT} ${BACKEND_PORT}' \
+        < "$ROOT_DIR/templates/nginx.conf" \
+        > "/etc/nginx/sites-available/$APP_NAME"
 
     ln -sf \
         "/etc/nginx/sites-available/$APP_NAME" \
