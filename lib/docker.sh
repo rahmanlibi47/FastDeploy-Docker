@@ -52,19 +52,21 @@ install_docker() {
         gnupg
 
     # --------------------------------------------------
+    # Remove old Docker repository & GPG key
+    # --------------------------------------------------
+    rm -f /etc/apt/sources.list.d/docker*.list
+    rm -f /etc/apt/keyrings/docker.gpg
+
+    # --------------------------------------------------
     # Docker GPG Key
     # --------------------------------------------------
     install -m 0755 -d /etc/apt/keyrings
 
-    if [[ ! -f /etc/apt/keyrings/docker.gpg ]]; then
+    curl -fsSL "https://download.docker.com/linux/${DOCKER_REPO}/gpg" \
+        | gpg --dearmor \
+        -o /etc/apt/keyrings/docker.gpg
 
-        curl -fsSL "https://download.docker.com/linux/${DOCKER_REPO}/gpg" \
-            | gpg --dearmor \
-            -o /etc/apt/keyrings/docker.gpg
-
-        chmod a+r /etc/apt/keyrings/docker.gpg
-
-    fi
+    chmod a+r /etc/apt/keyrings/docker.gpg
 
     # --------------------------------------------------
     # Docker Repository
@@ -76,7 +78,7 @@ EOF
     apt-get update
 
     # --------------------------------------------------
-    # Install Docker
+    # Install Docker CE
     # --------------------------------------------------
     apt-get install -y \
         docker-ce \
@@ -86,7 +88,7 @@ EOF
         docker-compose-plugin
 
     # --------------------------------------------------
-    # Start Docker (if systemd exists)
+    # Enable and start Docker (systemd only)
     # --------------------------------------------------
     if command_exists systemctl && \
        [[ "$(ps -p 1 -o comm=)" == "systemd" ]]; then
@@ -101,15 +103,15 @@ EOF
     # --------------------------------------------------
     # Verify installation
     # --------------------------------------------------
-    docker --version >/dev/null 2>&1 || {
+    if ! docker --version >/dev/null 2>&1; then
         error "Docker installation failed."
         exit 1
-    }
+    fi
 
-    docker compose version >/dev/null 2>&1 || {
+    if ! docker compose version >/dev/null 2>&1; then
         error "Docker Compose installation failed."
         exit 1
-    }
+    fi
 
     success "Docker installed successfully."
 }
