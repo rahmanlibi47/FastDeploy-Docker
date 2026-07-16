@@ -11,9 +11,7 @@ configure_nginx() {
         apt-get install -y nginx
     fi
 
-    info "Generating Nginx configuration..."
-
-    envsubst \
+    envsubst '${SERVER_NAME} ${FRONTEND_PORT} ${AUTH_PORT} ${APPLICATION_PORT}' \
         < "$ROOT_DIR/templates/nginx.conf" \
         > "/etc/nginx/sites-available/$APP_NAME"
 
@@ -23,18 +21,13 @@ configure_nginx() {
 
     rm -f /etc/nginx/sites-enabled/default
 
-    info "Validating Nginx configuration..."
-
     nginx -t || {
         error "Nginx configuration test failed."
         exit 1
     }
 
     systemctl enable nginx
-    systemctl restart nginx || {
-        error "Failed to restart Nginx."
-        exit 1
-    }
+    systemctl restart nginx
 
-    success "Nginx configured successfully."
+    success "Nginx configured."
 }
