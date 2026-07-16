@@ -13,6 +13,13 @@ compose_up() {
     source "$ROOT_DIR/.env"
     set +a
 
+    echo "========== FastDeploy Environment =========="
+    echo "ROOT_DIR=$ROOT_DIR"
+    echo "AUTH_SECRET_KEY=$AUTH_SECRET_KEY"
+    echo "SECRET_KEY=$SECRET_KEY"
+    echo "AUTH_ALGORITHM=$AUTH_ALGORITHM"
+    echo "==========================================="
+
     # --------------------------------------------------
     # Generate application environment files
     # --------------------------------------------------
