@@ -9,16 +9,32 @@ compose_up() {
         exit 1
     }
 
+    # --------------------------------------------------
+    # Load FastDeploy environment
+    # --------------------------------------------------
     set -a
     source "$ROOT_DIR/.env"
     set +a
 
+    info "Current directory: $(pwd)"
+    info "APP_PATH: $APP_PATH"
+
+    echo
     echo "========== FastDeploy Environment =========="
-    echo "ROOT_DIR=$ROOT_DIR"
     echo "AUTH_SECRET_KEY=$AUTH_SECRET_KEY"
     echo "SECRET_KEY=$SECRET_KEY"
     echo "AUTH_ALGORITHM=$AUTH_ALGORITHM"
     echo "==========================================="
+    echo
+
+    # --------------------------------------------------
+    # Locate templates
+    # --------------------------------------------------
+    info "Searching for .env.docker.example files..."
+
+    find . -type f -name ".env.docker.example"
+
+    echo
 
     # --------------------------------------------------
     # Generate application environment files
@@ -29,11 +45,22 @@ compose_up() {
 
         target="${example%.example}"
 
+        info "Generating: $target"
+
         envsubst < "$example" > "$target"
 
-        info "Generated $(realpath --relative-to="$APP_PATH" "$target")"
+        if [[ -f "$target" ]]; then
+            success "Created $target"
+        else
+            error "Failed to create $target"
+        fi
 
     done < <(find . -type f -name ".env.docker.example")
+
+    echo
+    info "Generated environment files:"
+    find . -type f -name ".env.docker"
+    echo
 
     # --------------------------------------------------
     # Pull latest images
