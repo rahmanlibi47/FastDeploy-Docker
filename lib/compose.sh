@@ -43,17 +43,17 @@ compose_up() {
 
     while IFS= read -r example; do
 
-        target="${example%.example}"
+    echo "Example: $example"
 
-        info "Generating: $target"
+    target="${example%.example}"
 
-        envsubst < "$example" > "$target"
+    echo "Target : $target"
 
-        if [[ -f "$target" ]]; then
-            success "Created $target"
-        else
-            error "Failed to create $target"
-        fi
+    envsubst < "$example" > "$target"
+
+    echo "Exit code: $?"
+
+    ls -l "$target"
 
     done < <(find . -type f -name ".env.docker.example")
 
