@@ -14,11 +14,11 @@ configure_nginx() {
     if [[ "${SSL_ENABLED}" == "true" ]]; then
         info "Generating HTTPS Nginx configuration..."
         TEMPLATE="$ROOT_DIR/templates/nginx-ssl.conf"
-        ENV_VARS='${SERVER_NAME} ${FRONTEND_PORT} ${AUTH_PORT} ${APPLICATION_PORT}'
+        ENV_VARS='${DOMAIN} ${FRONTEND_PORT} ${AUTH_PORT} ${APPLICATION_PORT}'
     else
         info "Generating HTTP Nginx configuration..."
         TEMPLATE="$ROOT_DIR/templates/nginx.conf"
-        ENV_VARS='${SERVER_NAME} ${FRONTEND_PORT} ${AUTH_PORT} ${APPLICATION_PORT}'
+        ENV_VARS='${DOMAIN} ${FRONTEND_PORT} ${AUTH_PORT} ${APPLICATION_PORT}'
     fi
 
     envsubst "$ENV_VARS" \
