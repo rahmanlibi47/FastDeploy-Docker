@@ -9,6 +9,10 @@ compose_up() {
         exit 1
     }
 
+    set -a
+    source "$SCRIPT_DIR/.env"
+    set +a
+
     # --------------------------------------------------
     # Generate application environment files
     # --------------------------------------------------
