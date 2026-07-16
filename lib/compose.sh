@@ -10,7 +10,7 @@ compose_up() {
     }
 
     set -a
-    source "$SCRIPT_DIR/.env"
+    source "$ROOT_DIR/.env"
     set +a
 
     # --------------------------------------------------
