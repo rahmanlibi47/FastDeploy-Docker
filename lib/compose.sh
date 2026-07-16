@@ -10,15 +10,6 @@ compose_up() {
     }
 
     # --------------------------------------------------
-    # Load FastDeploy environment
-    # --------------------------------------------------
-    info "Loading deployment configuration..."
-
-    set -a
-    source "$SCRIPT_DIR/.env"
-    set +a
-
-    # --------------------------------------------------
     # Generate application environment files
     # --------------------------------------------------
     info "Generating environment files..."
